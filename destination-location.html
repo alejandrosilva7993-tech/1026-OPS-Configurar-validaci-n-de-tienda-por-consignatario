@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Destination Locations — Validar línea de tienda</title>
+  <link href="https://unpkg.com/primeng@17.18.0/resources/themes/lara-light-blue/theme.css" rel="stylesheet">
+  <link href="https://unpkg.com/primeicons@7.0.0/primeicons.css" rel="stylesheet" crossorigin="anonymous">
+  <style>
+    :root {
+      --primary-color: #3b82f6;
+      --primary-color-text: #ffffff;
+      --primary-50: #f5f9ff;
+      --primary-100: #d0e1fd;
+      --text-color: #4b5563;
+      --text-color-secondary: #6b7280;
+      --text-heading: #374151;
+      --surface-border: #dfe7ef;
+      --surface-50: #f9fafb;
+      --surface-100: #f3f4f6;
+      --surface-200: #e5e7eb;
+      --surface-300: #d1d5db;
+      --surface-700: #374151;
+      --surface-hover: #f6f9fc;
+      --breadcrumb-link: #3b82f6;
+      --breadcrumb-link-hover: #2563eb;
+      --breadcrumb-muted: #6b7280;
+      --btn-cancel: #8b9299;
+      --btn-success: #669b37;
+      --section-gap: 1rem;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      min-height: 100vh;
+      font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+      background: #fff;
+      color: var(--text-color);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .pi { font-style: normal; display: inline-block; min-width: 1em; line-height: 1; }
+
+    .page-shell { min-height: 100vh; display: flex; flex-direction: column; }
+    .page-content { flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; padding: 1.5rem 2rem 2.5rem; }
+
+    .breadcrumb { font-size: 0.875rem; color: var(--breadcrumb-muted); margin-bottom: 0.75rem; }
+    .breadcrumb ol { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; list-style: none; }
+    .breadcrumb li + li::before { content: "/"; margin-right: 0.35rem; color: var(--breadcrumb-muted); }
+    .breadcrumb a { color: var(--breadcrumb-link); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--breadcrumb-link-hover); text-decoration: underline; }
+    .breadcrumb li[aria-current="page"] { color: var(--breadcrumb-muted); }
+
+    .page-title { font-size: 1.8rem; font-weight: 600; color: var(--text-heading); margin-bottom: 1.25rem; }
+
+    .form-section { margin-bottom: 2rem; }
+    .section-head { padding-bottom: 0.6rem; margin-bottom: 1rem; border-bottom: 1px solid var(--surface-200); }
+    .section-title { font-size: 1.05rem; font-weight: 600; color: #334155; margin: 0; }
+
+    .form-grid { display: grid; gap: 1.25rem 1.5rem; }
+    .form-grid--3 { grid-template-columns: repeat(3, 1fr); }
+    .field { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+    .field-label { font-size: 0.875rem; font-weight: 500; color: var(--text-color); }
+    /* Info tip — mismo patrón OPS (pi-info-circle + bubble) */
+    .info-tip {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      margin-left: 0.35rem;
+      color: var(--text-color-secondary);
+      cursor: pointer;
+      vertical-align: middle;
+    }
+    .info-tip .pi { font-size: 1.05rem; }
+    .info-tip:hover, .info-tip:focus-within { color: #1e3a8a; }
+    .info-tip__bubble {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: #f8fafc;
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 400;
+      line-height: 1.35;
+      display: inline-block;
+      width: max-content;
+      max-width: none;
+      white-space: normal;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+      z-index: 60;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.25);
+    }
+    .info-tip__bubble::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #1e293b;
+    }
+    .info-tip:hover .info-tip__bubble,
+    .info-tip:focus-within .info-tip__bubble { opacity: 1; visibility: visible; }
+    .info-tip--right .info-tip__bubble { left: auto; right: -0.4rem; transform: none; }
+    .info-tip--right .info-tip__bubble::after { left: auto; right: 0.55rem; transform: none; }
+
+    .form-input, .form-select {
+      width: 100%;
+      min-height: 2.25rem;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.9rem;
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--text-color);
+      font-family: inherit;
+    }
+    .form-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 0.65rem center;
+      padding-right: 2rem;
+      cursor: pointer;
+    }
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px var(--primary-100);
+    }
+    .form-input:disabled, .form-input[disabled] {
+      background: #f1f5f9;
+      color: #94a3b8;
+      border-color: #e2e8f0;
+      cursor: not-allowed;
+      opacity: 1;
+      -webkit-text-fill-color: #94a3b8;
+    }
+    /* Misma estructura que un field con label: el checkbox queda en la línea de inputs */
+    .field--checkbox .field-label--spacer {
+      visibility: hidden;
+      pointer-events: none;
+      user-select: none;
+    }
+    .checkbox-field {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: 2.25rem;
+      font-size: 0.875rem;
+      color: var(--text-color);
+      cursor: pointer;
+      user-select: none;
+    }
+    .checkbox-field input {
+      width: 1rem;
+      height: 1rem;
+      accent-color: var(--primary-color);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* Switch excluyente — alineado a InputSwitch Lara / proyectos OPS */
+    .switch-field { display: flex; flex-direction: column; gap: 0.35rem; }
+    .switch-row { display: flex; align-items: center; min-height: 2.25rem; }
+    .ui-switch {
+      position: relative;
+      width: 2.75rem;
+      height: 1.5rem;
+      border: none;
+      border-radius: 999px;
+      background: #ced4da;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+      transition: background 0.2s ease;
+    }
+    .ui-switch:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--primary-100); }
+    .ui-switch[aria-checked="true"] { background: var(--primary-color); }
+    .ui-switch__thumb {
+      position: absolute;
+      top: 0.15rem;
+      left: 0.15rem;
+      width: 1.2rem;
+      height: 1.2rem;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
+      transition: transform 0.2s ease;
+      pointer-events: none;
+    }
+    .ui-switch[aria-checked="true"] .ui-switch__thumb { transform: translateX(1.25rem); }
+
+    .form-actions { display: flex; gap: 0.75rem; margin-top: 0.25rem; flex-wrap: wrap; }
+    .btn {
+      padding: 0.5rem 1.1rem;
+      min-height: 2.25rem;
+      border: 1px solid var(--surface-300);
+      background: #fff;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+    }
+    .btn-success { background: var(--btn-success); color: #fff; border-color: var(--btn-success); }
+    .btn-success:hover:not(:disabled) { filter: brightness(0.95); }
+
+    .page-footer {
+      margin-top: auto; padding: 0.65rem 1rem; text-align: center;
+      font-size: 0.8rem; color: #9ca3af; background: #f3f4f6; border-top: 1px solid #e5e7eb;
+    }
+
+    @media (max-width: 900px) {
+      .form-grid--3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <main class="page-content">
+      <nav class="breadcrumb" aria-label="Ruta de navegación">
+        <ol>
+          <li><a href="#">Inicio</a></li>
+          <li><a href="#">Destination Locations</a></li>
+          <li aria-current="page">Crear destination location</li>
+        </ol>
+      </nav>
+      <h1 class="page-title">Crear destination location</h1>
+
+      <form id="destinationForm" novalidate>
+        <section class="form-section">
+          <div class="section-head"><h2 class="section-title">Información básica</h2></div>
+
+          <div class="form-grid form-grid--3">
+            <div class="field">
+              <label class="field-label" for="fDestinationLocation">Destination Location</label>
+              <input id="fDestinationLocation" type="text" class="form-input" maxlength="80" autocomplete="off">
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="fNombre">Nombre</label>
+              <input id="fNombre" type="text" class="form-input" maxlength="120" autocomplete="off">
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="fDestinationCity">Destination City</label>
+              <input id="fDestinationCity" type="text" class="form-input" maxlength="80" autocomplete="off">
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="fArmadoEspecial">Armado especial</label>
+              <select id="fArmadoEspecial" class="form-select">
+                <option value="">Ninguno</option>
+                <option value="dona">Armado de dona</option>
+                <option value="familia">Armado por familia</option>
+                <option value="tradicional-bultos">Armado tradicional y bultos</option>
+              </select>
+            </div>
+
+            <div class="field field--checkbox">
+              <span class="field-label field-label--spacer" aria-hidden="true">&nbsp;</span>
+              <label class="checkbox-field" for="fPredeterminada">
+                <input id="fPredeterminada" type="checkbox">
+                Predeterminada
+              </label>
+            </div>
+
+            <div class="field field--checkbox">
+              <span class="field-label field-label--spacer" aria-hidden="true">&nbsp;</span>
+              <label class="checkbox-field" for="fEsTienda">
+                <input id="fEsTienda" type="checkbox">
+                Es tienda
+              </label>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="fTienda">Tienda</label>
+              <input id="fTienda" type="text" class="form-input" disabled aria-disabled="true">
+            </div>
+
+            <!-- HU: Validar línea de tienda — toggle + info tip (patrón OPS) -->
+            <div class="field switch-field" id="wrapValidarLineaTienda">
+              <span class="field-label" id="fValidarLineaTiendaLabel">
+                Validar línea de tienda
+                <span class="info-tip info-tip--right" tabindex="0" role="note"
+                      aria-describedby="fValidarLineaTienda-tip">
+                  <i class="pi pi-info-circle" aria-hidden="true"></i>
+                  <span class="info-tip__bubble" id="fValidarLineaTienda-tip">
+                    Durante la importación, se valida la tienda contra el<br>
+                    catálogo de líneas y se asigna la línea como bloque
+                  </span>
+                </span>
+              </span>
+              <div class="switch-row">
+                <button
+                  type="button"
+                  class="ui-switch"
+                  id="fValidarLineaTienda"
+                  role="switch"
+                  aria-checked="false"
+                  aria-labelledby="fValidarLineaTiendaLabel"
+                >
+                  <span class="ui-switch__thumb" aria-hidden="true"></span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-success">Crear</button>
+        </div>
+      </form>
+    </main>
+
+    <footer class="page-footer">3.36.29-1 ©Netlogistik 2026</footer>
+  </div>
+
+  <script>
+    (function () {
+      var sw = document.getElementById('fValidarLineaTienda');
+
+      function isOn() {
+        return sw.getAttribute('aria-checked') === 'true';
+      }
+
+      function setOn(on) {
+        sw.setAttribute('aria-checked', on ? 'true' : 'false');
+      }
+
+      sw.addEventListener('click', function () {
+        setOn(!isOn());
+      });
+      sw.addEventListener('keydown', function (e) {
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          setOn(!isOn());
+        }
+      });
+
+      document.getElementById('destinationForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+      });
+    })();
+  </script>
+</body>
+</html>
